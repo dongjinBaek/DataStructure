@@ -25,18 +25,12 @@ public class MovieDBItem implements Comparable<MovieDBItem> {
 
     @Override
     public int compareTo(MovieDBItem other) {
-        //handle when item is null
-        if(genre == null || title == null)
-            return -1;
-        if(genre.equals(other.getGenre()))
-            return title.compareTo(other.getTitle());
-        else
-            return genre.compareTo(other.getGenre());
+        // TODO delete the line below and implement this method
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean equals(Object obj) {
-        //can I use other.genre ? it is private field
         if (this == obj)
             return true;
         if (obj == null)

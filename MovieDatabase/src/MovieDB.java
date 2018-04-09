@@ -8,11 +8,10 @@ import java.util.NoSuchElementException;
  * 유지하는 데이터베이스이다. 
  */
 public class MovieDB {
-	MyLinkedList<Genre> genreList;
     public MovieDB() {
         // FIXME implement this
-		genreList = new MyLinkedList<>();
-    	// HINT: MovieDBGenre 클래스를 정렬된 상태로 유지하기 위한
+    	
+    	// HINT: MovieDBGenre 클래스를 정렬된 상태로 유지하기 위한 
     	// MyLinkedList 타입의 멤버 변수를 초기화 한다.
     }
 
@@ -39,9 +38,7 @@ public class MovieDB {
         // Search the given term from the MovieDB.
         // You should return a linked list of MovieDBItem.
         // The search command is handled at SearchCmd class.
-    	for(Genre g : genreList){
-    		for(Node<String> movie : g.)
-		}
+    	
     	// Printing search results is the responsibility of SearchCmd class. 
     	// So you must not use System.out in this method to achieve specs of the assignment.
     	
@@ -78,12 +75,8 @@ public class MovieDB {
 }
 
 class Genre extends Node<String> implements Comparable<Genre> {
-	//private String item;
-	//private Node<String> next;
-	private MovieList mv;
 	public Genre(String name) {
 		super(name);
-		mv = new MovieList();
 		throw new UnsupportedOperationException("not implemented yet");
 	}
 	
@@ -99,22 +92,14 @@ class Genre extends Node<String> implements Comparable<Genre> {
 
 	@Override
 	public boolean equals(Object obj) {
-	    if (this == obj) return true;
-	    if (obj == null) return false;
-	    if(this.getClass() != obj.getClass())
-	    	return false;
-	    Genre other = (Genre) obj;
-	    if(getItem().equals(other.getItem()))
-	    	return true;
-	    else
-	    	return false;
+		throw new UnsupportedOperationException("not implemented yet");
 	}
 }
 
-class MovieList extends MyLinkedList<String> implements ListInterface<String> {
+class MovieList implements ListInterface<String> {	
 	public MovieList() {
 	}
-	/*
+
 	@Override
 	public Iterator<String> iterator() {
 		throw new UnsupportedOperationException("not implemented yet");
@@ -144,5 +129,4 @@ class MovieList extends MyLinkedList<String> implements ListInterface<String> {
 	public void removeAll() {
 		throw new UnsupportedOperationException("not implemented yet");
 	}
-	*/
 }
