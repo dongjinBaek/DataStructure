@@ -33,6 +33,7 @@ public class MovieDBItem implements Comparable<MovieDBItem> {
 
     @Override
     public boolean equals(Object obj) {
+        //can I use other.genre ? its private
         if (this == obj)
             return true;
         if (obj == null)

@@ -9,23 +9,15 @@ import java.util.NoSuchElementException;
  */
 public class MovieDB {
 
-	MyLinkedList<Genre> genres;
+	private GenreList genreList;
 
 	public MovieDB() {
-		genres = new MyLinkedList<>();
+		genreList = new GenreList();
 	}
 
 	public void insert(MovieDBItem item) {
-		Genre newGenre = new Genre(item.getGenre());
-		Node<Genre> cur = genres.head;
-    	while (cur.getNext() != null && newGenre.compareTo(cur.getNext().getItem()) < 0) {
-    		cur = cur.getNext();
-		}
-		if (cur.getNext() == null || newGenre.compareTo(cur.getNext().getItem()) < 0) {
-    		genres.insertAfter(cur, newGenre);
-    		cur = cur.getNext();
-		}
-		cur.getItem().addMovie(item.getTitle());
+		// Insert the given item to the MovieDB.
+	    genreList.insertItem(item);
 		// Printing functionality is provided for the sake of debugging.
 		// This code should be removed before submitting your work.
 		System.err.printf("[trace] MovieDB: INSERT [%s] [%s]\n", item.getGenre(), item.getTitle());
@@ -34,7 +26,11 @@ public class MovieDB {
 	public void delete(MovieDBItem item) {
 		// FIXME implement this
 		// Remove the given item from the MovieDB.
-
+		for (Genre genre : genreList) {
+			if (genre.getItem().equals(item.getGenre())) {
+				genre.deleteMovie(item.getTitle());
+			}
+		}
 		// Printing functionality is provided for the sake of debugging.
 		// This code should be removed before submitting your work.
 		System.err.printf("[trace] MovieDB: DELETE [%s] [%s]\n", item.getGenre(), item.getTitle());
@@ -84,16 +80,24 @@ public class MovieDB {
 class Genre extends Node<String> implements Comparable<Genre> {
     //private String item;
 	//private Node<String> next;
-    MovieList movieList;
+    private MovieList movieList;
 
 	public Genre(String name) {
 		super(name);
 		setItem(name);
-		movieList = new MovieList(name);
+		movieList = new MovieList();
 	}
 	
 	@Override
 	public int compareTo(Genre o) {
+	    if (getItem() == null) {
+	    	if (o.getItem() == null)
+	    		return 0;
+	    	else
+	    		return -1;
+		} else if (o.getItem() == null)
+			return 1;
+
 	    return getItem().compareTo(o.getItem());
 	}
 
@@ -122,62 +126,47 @@ class Genre extends Node<String> implements Comparable<Genre> {
 	public void addMovie(String title) {
 		movieList.addMovie(title);
 	}
+
+	public void deleteMovie(String title) {
+		movieList.remove(title);
+	}
 }
 
+class GenreList extends MyLinkedList<Genre> implements ListInterface<Genre>{
+	//Node<Genre> head;
+	//int numItems;
+
+	public void insertItem(MovieDBItem item) {
+		Genre newGenre = new Genre(item.getGenre());
+		Node<Genre> prev = head;
+		Node<Genre> curr = head.getNext();
+    	while (curr != null && newGenre.compareTo(curr.getItem()) < 0) {
+    		prev = curr;
+    		curr = curr.getNext();
+		}
+		//insert new genre if not exists
+		if (curr == null || newGenre.compareTo(curr.getItem()) < 0) {
+    	    addItemAfter(newGenre, prev);
+    		curr = prev.getNext();
+		}
+		curr.getItem().addMovie(item.getTitle());
+	}
+}
 class MovieList  extends MyLinkedList<String> implements ListInterface<String> {
+	// Node<String> head;
+	// int numItems;
 
-	Node<String> head;
-	int numMovies;
-
-	public MovieList(String genreName) {
-	    this.genre = new Genre(genreName);
-	}
-
-	@Override
-	public Iterator<String> iterator() {
-		throw new UnsupportedOperationException("not implemented yet");
-	}
-
-	@Override
-	public boolean isEmpty() {
-		throw new UnsupportedOperationException("not implemented yet");
-	}
-
-	@Override
-	public int size() {
-	    return numMovies;
-	}
-
-	@Override
-	public void add(String item) {
-		throw new UnsupportedOperationException("not implemented yet");
-	}
-
-	public void addSorted(String item) {
-		//ToDo
-	}
-
-	@Override
-	public String first() {
-		throw new UnsupportedOperationException("not implemented yet");
-	}
-
-	@Override
-	public void removeAll() {
-		throw new UnsupportedOperationException("not implemented yet");
-	}
-
+    //add movie mantaining sorted order
 	public void addMovie(String title) {
 	    //movie with title will be added after cur
-		Node<String> cur = head;
-    	while (cur.getNext() != null && title.compareTo(cur.getNext().getItem()) < 0) {
-    		cur = cur.getNext();
+		Node<String> prev = head;
+		Node<String> curr = head;
+    	while (prev != null && title.compareTo(curr.getItem()) < 0) {
+    		prev = curr;
+    		curr = curr.getNext();
 		}
-		if (cur.getNext() == null || title.compareTo(cur.getNext().getItem()) < 0) {
-    	    Node<String> newNode = new Node<>(title);
-    	    newNode.setNext(cur.getNext());
-    	    cur.setNext(newNode);
-    	    numMovies++;
+		if (curr == null || title.compareTo(curr.getItem()) < 0) {
+    	    addItemAfter(title, prev);
 		}
 	}
 }

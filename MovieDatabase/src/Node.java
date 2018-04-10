@@ -1,4 +1,4 @@
-public class Node<T extends Comparable<T>>  {
+public class Node<T>  {
     private T item;
     private Node<T> next;
 
@@ -29,7 +29,9 @@ public class Node<T extends Comparable<T>>  {
     }
     
     public final void insertNext(T obj) {
-        setNext(new Node<>(obj));
+        Node<T> newNode = new Node<>(obj);
+        newNode.setNext(this.getNext());
+        this.setNext(newNode);
     }
     
     public final void removeNext() {
