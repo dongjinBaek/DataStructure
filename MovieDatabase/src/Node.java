@@ -1,4 +1,4 @@
-public class Node<T> {
+public class Node<T extends Comparable<T>>  {
     private T item;
     private Node<T> next;
 
@@ -29,7 +29,7 @@ public class Node<T> {
     }
     
     public final void insertNext(T obj) {
-		throw new UnsupportedOperationException("not implemented yet");
+        setNext(new Node<>(obj));
     }
     
     public final void removeNext() {
