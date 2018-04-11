@@ -35,6 +35,10 @@ public class Node<T>  {
     }
     
     public final void removeNext() {
-		throw new UnsupportedOperationException("not implemented yet");
+        if (this.next == null) {
+            throw new IllegalStateException("Next node doesn't exist");
+        } else {
+            this.next = this.next.next;
+        }
     }
 }

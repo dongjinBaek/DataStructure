@@ -9,6 +9,7 @@ public class MyLinkedList<T> implements ListInterface<T> {
 
 	public MyLinkedList() {
 		head = new Node<T>(null);
+		numItems = 0;
 	}
 
     /**
@@ -70,7 +71,7 @@ public class MyLinkedList<T> implements ListInterface<T> {
     	Node<T> curr = prev.getNext();
     	while (curr != null) {
     		if (curr.getItem().equals(item)) {
-    			prev.setNext(curr.getNext());
+    			prev.removeNext();
     			numItems -= 1;
     			return;
 			}

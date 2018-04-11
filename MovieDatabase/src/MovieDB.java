@@ -8,7 +8,6 @@ import java.util.NoSuchElementException;
  * 유지하는 데이터베이스이다.
  */
 public class MovieDB {
-
 	private GenreList genreList;
 
 	public MovieDB() {
@@ -16,62 +15,39 @@ public class MovieDB {
 	}
 
 	public void insert(MovieDBItem item) {
-		// Insert the given item to the MovieDB.
 	    genreList.insertItem(item);
-		// Printing functionality is provided for the sake of debugging.
-		// This code should be removed before submitting your work.
-		System.err.printf("[trace] MovieDB: INSERT [%s] [%s]\n", item.getGenre(), item.getTitle());
 	}
 
 	public void delete(MovieDBItem item) {
-		// FIXME implement this
-		// Remove the given item from the MovieDB.
 		for (Genre genre : genreList) {
 			if (genre.getItem().equals(item.getGenre())) {
-				genre.deleteMovie(item.getTitle());
+				genre.movieList.remove(item.getTitle());
 			}
 		}
-		// Printing functionality is provided for the sake of debugging.
-		// This code should be removed before submitting your work.
-		System.err.printf("[trace] MovieDB: DELETE [%s] [%s]\n", item.getGenre(), item.getTitle());
 	}
 
 	public MyLinkedList<MovieDBItem> search(String term) {
-		// FIXME implement this
-		// Search the given term from the MovieDB.
-		// You should return a linked list of MovieDBItem.
-		// The search command is handled at SearchCmd class.
-
+		MyLinkedList<MovieDBItem> results = new MyLinkedList<MovieDBItem>();
+		for (Genre genre : genreList) {
+			for (String title : genre.movieList) {
+				if (title.contains(term))
+					results.add(new MovieDBItem(genre.getItem(), title));
+			}
+		}
 		// Printing search results is the responsibility of SearchCmd class.
 		// So you must not use System.out in this method to achieve specs of the assignment.
-
-		// This tracing functionality is provided for the sake of debugging.
-		// This code should be removed before submitting your work.
-		System.err.printf("[trace] MovieDB: SEARCH [%s]\n", term);
-
-		// FIXME remove this code and return an appropriate MyLinkedList<MovieDBItem> instance.
-		// This code is supplied for avoiding compilation error.
-		MyLinkedList<MovieDBItem> results = new MyLinkedList<MovieDBItem>();
-
 		return results;
 	}
 
 	public MyLinkedList<MovieDBItem> items() {
-		// FIXME implement this
-		// Search the given term from the MovieDatabase.
-		// You should return a linked list of QueryResult.
-		// The print command is handled at PrintCmd class.
+		MyLinkedList<MovieDBItem> results = new MyLinkedList<MovieDBItem>();
 
+		for (Genre genre : genreList) {
+			for (String title : genre.movieList)
+				results.add(new MovieDBItem(genre.getItem(), title));
+		}
 		// Printing movie items is the responsibility of PrintCmd class.
 		// So you must not use System.out in this method to achieve specs of the assignment.
-
-		// Printing functionality is provided for the sake of debugging.
-		// This code should be removed before submitting your work.
-		System.err.printf("[trace] MovieDB: ITEMS\n");
-
-		// FIXME remove this code and return an appropriate MyLinkedList<MovieDBItem> instance.
-		// This code is supplied for avoiding compilation error.
-		MyLinkedList<MovieDBItem> results = new MyLinkedList<MovieDBItem>();
 
 		return results;
 	}
@@ -80,7 +56,7 @@ public class MovieDB {
 class Genre extends Node<String> implements Comparable<Genre> {
     //private String item;
 	//private Node<String> next;
-    private MovieList movieList;
+    MovieList movieList;
 
 	public Genre(String name) {
 		super(name);
@@ -103,7 +79,7 @@ class Genre extends Node<String> implements Comparable<Genre> {
 
 	@Override
 	public int hashCode() {
-		throw new UnsupportedOperationException("not implemented yet");
+	    return getItem() == null ? 0 : getItem().hashCode();
 	}
 
 	@Override
@@ -122,14 +98,6 @@ class Genre extends Node<String> implements Comparable<Genre> {
 			return false;
 	    return true;
 	}
-
-	public void addMovie(String title) {
-		movieList.addMovie(title);
-	}
-
-	public void deleteMovie(String title) {
-		movieList.remove(title);
-	}
 }
 
 class GenreList extends MyLinkedList<Genre> implements ListInterface<Genre>{
@@ -140,7 +108,7 @@ class GenreList extends MyLinkedList<Genre> implements ListInterface<Genre>{
 		Genre newGenre = new Genre(item.getGenre());
 		Node<Genre> prev = head;
 		Node<Genre> curr = head.getNext();
-    	while (curr != null && newGenre.compareTo(curr.getItem()) < 0) {
+    	while (curr != null && newGenre.compareTo(curr.getItem()) > 0) {
     		prev = curr;
     		curr = curr.getNext();
 		}
@@ -149,7 +117,7 @@ class GenreList extends MyLinkedList<Genre> implements ListInterface<Genre>{
     	    addItemAfter(newGenre, prev);
     		curr = prev.getNext();
 		}
-		curr.getItem().addMovie(item.getTitle());
+		curr.getItem().movieList.add(item.getTitle());
 	}
 }
 class MovieList  extends MyLinkedList<String> implements ListInterface<String> {
@@ -157,11 +125,12 @@ class MovieList  extends MyLinkedList<String> implements ListInterface<String> {
 	// int numItems;
 
     //add movie mantaining sorted order
-	public void addMovie(String title) {
+    @Override
+	public void add(String title) {
 	    //movie with title will be added after cur
 		Node<String> prev = head;
-		Node<String> curr = head;
-    	while (prev != null && title.compareTo(curr.getItem()) < 0) {
+		Node<String> curr = head.getNext();
+    	while (curr != null && title.compareTo(curr.getItem()) > 0) {
     		prev = curr;
     		curr = curr.getNext();
 		}
