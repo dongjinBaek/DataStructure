@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BigInteger/BigInteger.iml" filepath="$PROJECT_DIR$/BigInteger/BigInteger.iml" />
       <module fileurl="file://$PROJECT_DIR$/MovieDatabase/MovieDatabase.iml" filepath="$PROJECT_DIR$/MovieDatabase/MovieDatabase.iml" />
+      <module fileurl="file://$PROJECT_DIR$/StackCalculator/StackCalculator.iml" filepath="$PROJECT_DIR$/StackCalculator/StackCalculator.iml" />
     </modules>
   </component>
 </project>
