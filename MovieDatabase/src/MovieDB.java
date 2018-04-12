@@ -14,45 +14,47 @@ public class MovieDB {
 		genreList = new GenreList();
 	}
 
+	//insert MovieDBItem to MovieDB, if not exists
 	public void insert(MovieDBItem item) {
 	    genreList.insertItem(item);
 	}
 
+	//delete MovieDBItem from MovieDB, if exists
 	public void delete(MovieDBItem item) {
 		for (Genre genre : genreList) {
 			if (genre.getItem().equals(item.getGenre())) {
 				genre.movieList.remove(item.getTitle());
+				if (genre.movieList.isEmpty())
+				    genreList.remove(genre);
+				return;
 			}
 		}
 	}
 
+	//makes a list of MovieDBItem which movie title contains term
 	public MyLinkedList<MovieDBItem> search(String term) {
-		MyLinkedList<MovieDBItem> results = new MyLinkedList<MovieDBItem>();
+		MyLinkedList<MovieDBItem> results = new MyLinkedList<>();
 		for (Genre genre : genreList) {
 			for (String title : genre.movieList) {
 				if (title.contains(term))
 					results.add(new MovieDBItem(genre.getItem(), title));
 			}
 		}
-		// Printing search results is the responsibility of SearchCmd class.
-		// So you must not use System.out in this method to achieve specs of the assignment.
 		return results;
 	}
 
+	//return a list of all MovieDBItem in sorted order
 	public MyLinkedList<MovieDBItem> items() {
-		MyLinkedList<MovieDBItem> results = new MyLinkedList<MovieDBItem>();
-
+		MyLinkedList<MovieDBItem> results = new MyLinkedList<>();
 		for (Genre genre : genreList) {
 			for (String title : genre.movieList)
 				results.add(new MovieDBItem(genre.getItem(), title));
 		}
-		// Printing movie items is the responsibility of PrintCmd class.
-		// So you must not use System.out in this method to achieve specs of the assignment.
-
 		return results;
 	}
 }
 
+//contains genre name and a movie list
 class Genre extends Node<String> implements Comparable<Genre> {
     //private String item;
 	//private Node<String> next;
@@ -104,6 +106,7 @@ class GenreList extends MyLinkedList<Genre> implements ListInterface<Genre>{
 	//Node<Genre> head;
 	//int numItems;
 
+	//insert MovieDBItem object maintaining sorted order
 	public void insertItem(MovieDBItem item) {
 		Genre newGenre = new Genre(item.getGenre());
 		Node<Genre> prev = head;

@@ -117,5 +117,4 @@ public class MovieDatabaseConsole {
 		// because parse method above throws CommandParseException when arguments are invalid.
 		return command;
 	}
-
 }

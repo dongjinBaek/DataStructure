@@ -62,5 +62,4 @@ public class MovieDBItem implements Comparable<MovieDBItem> {
         result = prime * result + ((title == null) ? 0 : title.hashCode());
         return result;
     }
-
 }
