@@ -35,8 +35,9 @@ public class CalculatorTest
 			System.out.println(answer);
 		}
 		catch (Exception e) {
-			//FIXME : Change after finish
-			System.out.println("ERROR" + " : " + e.toString());
+			System.out.println("ERROR");
+			//FIXME : Delete after finish
+			System.out.println(e.toString());
 		}
 	}
 
@@ -79,7 +80,9 @@ public class CalculatorTest
 				char op = token.charAt(0);
 				if (lastWasOp && op == '-')
 					op = '~';
-				if (op == ')') {
+				if (op == '(') {
+					stack.push(op);
+				} else if (op == ')') {
 					while (!stack.isEmpty() && stack.peek() != '(') {
 						sb.append(stack.peek() + " ");
 						stack.pop();
@@ -89,12 +92,14 @@ public class CalculatorTest
 					else
 						stack.pop();
 				} else {
-					while (!stack.isEmpty() && getWeight(stack.peek()) >= getWeight(op)) {
-						sb.append(stack.peek() + " ");
-						stack.pop();
-					}
-					stack.push(op);
-					lastWasOp = true;
+                    while (!stack.isEmpty() && getWeight(stack.peek()) >= getWeight(op)) {
+                    	if(stack.peek() == op && (op == '^' || op == '~'))
+                    		break;
+                        sb.append(stack.peek() + " ");
+                        stack.pop();
+                    }
+                    stack.push(op);
+                    lastWasOp = true;
 				}
 			}
 		}
@@ -121,13 +126,19 @@ public class CalculatorTest
                     int num = stack.peek();		stack.pop();
                     stack.push(-num);
 				} else {
-			        int num1 = stack.peek();	stack.pop();
+			        int num2 = stack.peek();	stack.pop();
 			        if (stack.isEmpty())
 			        	throw new Exception("Invalid expression");
-			        int num2 = stack.peek();	stack.pop();
+			        int num1 = stack.peek();	stack.pop();
 			        switch (op) {
 						case '^' :
-							//TODO
+						    if (num2 < 0)
+						    	throw new Exception("Exponent cannot be negative");
+						    else if (num2 == 0)
+						    	stack.push(1);
+						    else
+						    	stack.push((int)Math.pow(num1, num2));
+						    break;
 						case '*' :
 							stack.push(num1 * num2);	break;
 						case '/' :
