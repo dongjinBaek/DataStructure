@@ -1,4 +1,7 @@
 import java.io.*;
+import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CalculatorTest
 {
@@ -25,7 +28,115 @@ public class CalculatorTest
 
 	private static void command(String input)
 	{
-		// TODO : 아래 문장을 삭제하고 구현해라.
-		System.out.println("<< command 함수에서 " + input + " 명령을 처리할 예정입니다 >>");
+		try {
+			String postfix = convertToPostfix(input);
+			int answer = calcPostfix(postfix);
+			System.out.println(postfix);
+			System.out.println(answer);
+		}
+		catch (Exception e) {
+			//FIXME : Change after finish
+			System.out.println("ERROR" + " : " + e.toString());
+		}
 	}
+
+	private static int getWeight(char op) {
+		switch (op) {
+			case '(':
+				return 0;
+			case '+':
+			case '-':
+				return 1;
+			case '*':
+			case '/':
+			case '%':
+				return 2;
+			case '~':
+				return 3;
+			case '^':
+				return 4;
+			default:
+				return -1;
+		}
+	}
+	//TODO
+	private static String convertToPostfix(String input) throws Exception{
+		if(!input.matches("(\\d+|\\s|[\\(\\)\\^\\+\\-\\*/%])*"))
+			throw new Exception("Undefined symbol in input");
+		Stack<Character> stack = new Stack();
+		StringBuilder sb = new StringBuilder();
+		boolean lastWasOp = true;
+		Pattern pattern = Pattern.compile("(\\d+|[\\(\\)\\^\\+\\-\\*/%])");
+		Matcher matcher = pattern.matcher(input);
+		while (matcher.find()) {
+		    String token = matcher.group();
+			if (token.matches("\\d+")) {
+				sb.append(token + " ");
+				lastWasOp = false;
+			} else {
+				if(token.length() != 1)
+					throw new Exception("Invalid operator");
+				char op = token.charAt(0);
+				if (lastWasOp && op == '-')
+					op = '~';
+				if (op == ')') {
+					while (!stack.isEmpty() && stack.peek() != '(') {
+						sb.append(stack.peek() + " ");
+						stack.pop();
+					}
+					if (stack.isEmpty())
+						throw new Exception("Parenthesis does not match");
+					else
+						stack.pop();
+				} else {
+					while (!stack.isEmpty() && getWeight(stack.peek()) >= getWeight(op)) {
+						sb.append(stack.peek() + " ");
+						stack.pop();
+					}
+					stack.push(op);
+					lastWasOp = true;
+				}
+			}
+		}
+		while (!stack.isEmpty()) {
+            if(stack.peek() == '(')
+                throw new Exception("Parenthesis does not match");
+            sb.append(stack.peek() + " ");
+            stack.pop();
+        }
+        return sb.toString().trim();
+	}
+
+	//TODO
+	private static int calcPostfix(String input) throws Exception {
+		String[] tokens = input.split(" ");
+		int ret=0,num=0;
+		for (String token : tokens) {
+			if(token.matches("\\d+")) {
+				num = Integer.parseInt(token);
+			} else {
+			    char op = token.charAt(0);
+				switch(op) {
+					case '^' :
+						//TODO
+					case '*' :
+						ret *= num;	break;
+					case '/' :
+						ret /= num;	break;
+					case '%' :
+						ret %= num;	break;
+					case '+':
+						ret += num;	break;
+					case '-':
+						ret -= num;	break;
+					case '~':
+						ret = -ret;	break;
+					default:
+
+				}
+			}
+		}
+		return ret;
+	}
+
 }
