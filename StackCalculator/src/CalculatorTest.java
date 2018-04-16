@@ -59,7 +59,7 @@ public class CalculatorTest
 				return -1;
 		}
 	}
-	//TODO
+
 	private static String convertToPostfix(String input) throws Exception{
 		if(!input.matches("(\\d+|\\s|[\\(\\)\\^\\+\\-\\*/%])*"))
 			throw new Exception("Undefined symbol in input");
@@ -107,36 +107,55 @@ public class CalculatorTest
         return sb.toString().trim();
 	}
 
-	//TODO
 	private static int calcPostfix(String input) throws Exception {
 		String[] tokens = input.split(" ");
-		int ret=0,num=0;
+		Stack<Integer> stack = new Stack();
 		for (String token : tokens) {
-			if(token.matches("\\d+")) {
-				num = Integer.parseInt(token);
+			if (token.matches("\\d+")) {
+				stack.push(Integer.parseInt(token));
 			} else {
+				if (stack.isEmpty())
+					throw new Exception("Invalid expression");
 			    char op = token.charAt(0);
-				switch(op) {
-					case '^' :
-						//TODO
-					case '*' :
-						ret *= num;	break;
-					case '/' :
-						ret /= num;	break;
-					case '%' :
-						ret %= num;	break;
-					case '+':
-						ret += num;	break;
-					case '-':
-						ret -= num;	break;
-					case '~':
-						ret = -ret;	break;
-					default:
-
+			    if (op == '~') {
+                    int num = stack.peek();		stack.pop();
+                    stack.push(-num);
+				} else {
+			        int num1 = stack.peek();	stack.pop();
+			        if (stack.isEmpty())
+			        	throw new Exception("Invalid expression");
+			        int num2 = stack.peek();	stack.pop();
+			        switch (op) {
+						case '^' :
+							//TODO
+						case '*' :
+							stack.push(num1 * num2);	break;
+						case '/' :
+							if (num2 == 0)
+								throw new Exception("Divide by zero in /");
+							else
+								stack.push(num1  / num2);
+							break;
+						case '%' :
+							if (num2 == 0)
+								throw new Exception("Divide by zero in %");
+							else
+								stack.push(num1 % num2);
+							break;
+						case '+' :
+							stack.push(num1 + num2);	break;
+						case '-' :
+							stack.push(num1 - num2);	break;
+						default :
+							throw new Exception("Invalid expression");
+					}
 				}
+
 			}
 		}
-		return ret;
+		if(stack.size() != 1)
+			throw new Exception("Invalid expression");
+		return stack.peek();
 	}
 
 }
