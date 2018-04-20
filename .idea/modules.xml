@@ -3,8 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BigInteger/BigInteger.iml" filepath="$PROJECT_DIR$/BigInteger/BigInteger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Matching/Matching.iml" filepath="$PROJECT_DIR$/Matching/Matching.iml" />
       <module fileurl="file://$PROJECT_DIR$/MovieDatabase/MovieDatabase.iml" filepath="$PROJECT_DIR$/MovieDatabase/MovieDatabase.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Sorting/Sorting.iml" filepath="$PROJECT_DIR$/Sorting/Sorting.iml" />
       <module fileurl="file://$PROJECT_DIR$/StackCalculator/StackCalculator.iml" filepath="$PROJECT_DIR$/StackCalculator/StackCalculator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Subway/Subway.iml" filepath="$PROJECT_DIR$/Subway/Subway.iml" />
     </modules>
   </component>
 </project>
