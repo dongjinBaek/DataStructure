@@ -30,7 +30,7 @@ public class CalculatorTest
 	{
 		try {
 			String postfix = convertToPostfix(input);
-			int answer = calcPostfix(postfix);
+			long answer = calcPostfix(postfix);
 			System.out.println(postfix);
 			System.out.println(answer);
 		}
@@ -72,6 +72,8 @@ public class CalculatorTest
 		while (matcher.find()) {
 		    String token = matcher.group();
 			if (token.matches("\\d+")) {
+			    if (lastWasOp == false)
+			    	throw new Exception("Invalid expression");
 				sb.append(token + " ");
 				lastWasOp = false;
 			} else {
@@ -81,7 +83,7 @@ public class CalculatorTest
 				if (lastWasOp && op == '-')
 					op = '~';
 				if (op == '(') {
-					stack.push(op);
+					lastWasOp = true;
 				} else if (op == ')') {
 					while (!stack.isEmpty() && stack.peek() != '(') {
 						sb.append(stack.peek() + " ");
@@ -112,32 +114,32 @@ public class CalculatorTest
         return sb.toString().trim();
 	}
 
-	private static int calcPostfix(String input) throws Exception {
+	private static long calcPostfix(String input) throws Exception {
 		String[] tokens = input.split(" ");
-		Stack<Integer> stack = new Stack();
+		Stack<Long> stack = new Stack();
 		for (String token : tokens) {
 			if (token.matches("\\d+")) {
-				stack.push(Integer.parseInt(token));
+				stack.push(Long.parseLong(token));
 			} else {
 				if (stack.isEmpty())
 					throw new Exception("Invalid expression");
 			    char op = token.charAt(0);
 			    if (op == '~') {
-                    int num = stack.peek();		stack.pop();
+                    long num = stack.peek();		stack.pop();
                     stack.push(-num);
 				} else {
-			        int num2 = stack.peek();	stack.pop();
+			        long num2 = stack.peek();	stack.pop();
 			        if (stack.isEmpty())
 			        	throw new Exception("Invalid expression");
-			        int num1 = stack.peek();	stack.pop();
+			        long num1 = stack.peek();	stack.pop();
 			        switch (op) {
 						case '^' :
 						    if (num2 < 0)
 						    	throw new Exception("Exponent cannot be negative");
 						    else if (num2 == 0)
-						    	stack.push(1);
+						    	stack.push(1L);
 						    else
-						    	stack.push((int)Math.pow(num1, num2));
+						    	stack.push((long)Math.pow(num1, num2));
 						    break;
 						case '*' :
 							stack.push(num1 * num2);	break;
