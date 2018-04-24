@@ -36,8 +36,7 @@ public class CalculatorTest
 		}
 		catch (Exception e) {
 			System.out.println("ERROR");
-			//FIXME : Delete after finish
-			System.out.println(e.toString());
+			//System.out.println(e.toString());
 		}
 	}
 
@@ -70,31 +69,36 @@ public class CalculatorTest
 		Pattern pattern = Pattern.compile("(\\d+|[\\(\\)\\^\\+\\-\\*/%])");
 		Matcher matcher = pattern.matcher(input);
 		while (matcher.find()) {
+			//token is a string of a number(long) or an operator
 		    String token = matcher.group();
+		    //if number, put it into postfix exp directly
 			if (token.matches("\\d+")) {
+				//invalid exp if two numbers are adjacent without operator
 			    if (lastWasOp == false)
 			    	throw new Exception("Invalid expression");
 				sb.append(token + " ");
 				lastWasOp = false;
-			} else {
-				if(token.length() != 1)
-					throw new Exception("Invalid operator");
+			} else {	//if operator, put it in operator stack
 				char op = token.charAt(0);
 				if (lastWasOp && op == '-')
 					op = '~';
 				if (op == '(') {
+					stack.push('(');
 					lastWasOp = true;
 				} else if (op == ')') {
 					while (!stack.isEmpty() && stack.peek() != '(') {
 						sb.append(stack.peek() + " ");
 						stack.pop();
 					}
+					//invalid exp if right parenthesis is more than left
 					if (stack.isEmpty())
 						throw new Exception("Parenthesis does not match");
 					else
 						stack.pop();
 				} else {
+					//pop operators in stack with greater than or equal weight before push to implement precedence
                     while (!stack.isEmpty() && getWeight(stack.peek()) >= getWeight(op)) {
+                    	//in case of ^ and ~, do not pop previously inserted same operators to implement right associative
                     	if(stack.peek() == op && (op == '^' || op == '~'))
                     		break;
                         sb.append(stack.peek() + " ");
@@ -106,6 +110,7 @@ public class CalculatorTest
 			}
 		}
 		while (!stack.isEmpty()) {
+			//invalid exp if left parenthesis is more than right
             if(stack.peek() == '(')
                 throw new Exception("Parenthesis does not match");
             sb.append(stack.peek() + " ");
@@ -117,18 +122,21 @@ public class CalculatorTest
 	private static long calcPostfix(String input) throws Exception {
 		String[] tokens = input.split(" ");
 		Stack<Long> stack = new Stack();
+		//each token contains a string of number(long) or an operator
 		for (String token : tokens) {
 			if (token.matches("\\d+")) {
 				stack.push(Long.parseLong(token));
 			} else {
+				//at least one number is needed for any operator
 				if (stack.isEmpty())
 					throw new Exception("Invalid expression");
 			    char op = token.charAt(0);
 			    if (op == '~') {
-                    long num = stack.peek();		stack.pop();
+                    long num = stack.peek();	stack.pop();
                     stack.push(-num);
 				} else {
 			        long num2 = stack.peek();	stack.pop();
+			        //at least two numbers are needed for binary operator
 			        if (stack.isEmpty())
 			        	throw new Exception("Invalid expression");
 			        long num1 = stack.peek();	stack.pop();
@@ -136,8 +144,6 @@ public class CalculatorTest
 						case '^' :
 						    if (num2 < 0)
 						    	throw new Exception("Exponent cannot be negative");
-						    else if (num2 == 0)
-						    	stack.push(1L);
 						    else
 						    	stack.push((long)Math.pow(num1, num2));
 						    break;
@@ -146,14 +152,12 @@ public class CalculatorTest
 						case '/' :
 							if (num2 == 0)
 								throw new Exception("Divide by zero in /");
-							else
-								stack.push(num1  / num2);
+                            stack.push(num1  / num2);
 							break;
 						case '%' :
 							if (num2 == 0)
 								throw new Exception("Divide by zero in %");
-							else
-								stack.push(num1 % num2);
+                            stack.push(num1 % num2);
 							break;
 						case '+' :
 							stack.push(num1 + num2);	break;
@@ -166,6 +170,7 @@ public class CalculatorTest
 
 			}
 		}
+		//only final result should remain in the stack if it is a valid exp
 		if(stack.size() != 1)
 			throw new Exception("Invalid expression");
 		return stack.peek();
