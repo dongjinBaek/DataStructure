@@ -61,12 +61,12 @@ public class CalculatorTest
 	}
 
 	private static String convertToPostfix(String input) throws Exception{
-		if(!input.matches("(\\d+|\\s|[\\(\\)\\^\\+\\-\\*/%])*"))
-			throw new Exception("Undefined symbol in input");
+		//if(!input.matches("(\\d+|\\s|[()^+\\-*/%])*+"))
+			//throw new Exception("Undefined symbol in input");
 		Stack<Character> stack = new Stack();
 		StringBuilder sb = new StringBuilder();
 		boolean lastWasOp = true;
-		Pattern pattern = Pattern.compile("(\\d+|[\\(\\)\\^\\+\\-\\*/%])");
+		Pattern pattern = Pattern.compile("(\\d+|[()^+\\-*/%])");
 		Matcher matcher = pattern.matcher(input);
 		while (matcher.find()) {
 			//token is a string of a number(long) or an operator
@@ -74,7 +74,7 @@ public class CalculatorTest
 		    //if number, put it into postfix exp directly
 			if (token.matches("\\d+")) {
 				//invalid exp if two numbers are adjacent without operator
-			    if (lastWasOp == false)
+			    if (!lastWasOp)
 			    	throw new Exception("Invalid expression");
 				sb.append(token + " ");
 				lastWasOp = false;
@@ -84,8 +84,14 @@ public class CalculatorTest
 					op = '~';
 				if (op == '(') {
 					stack.push('(');
+					//invalid exp if left parenthesis come after number
+					if (!lastWasOp)
+						throw new Exception("Invalid expression");
 					lastWasOp = true;
 				} else if (op == ')') {
+					//invalid exp if parenthesis does not end with number
+					if (lastWasOp)
+						throw new Exception("Invalid expression");
 					while (!stack.isEmpty() && stack.peek() != '(') {
 						sb.append(stack.peek() + " ");
 						stack.pop();
