@@ -5,10 +5,12 @@ import java.util.regex.Pattern;
 
 public class CalculatorTest
 {
+    public static final Pattern tokenPattern = Pattern.compile("(\\d+|[()^+\\-*/%])");
+    public static final Pattern numberPattern = Pattern.compile("\\d+");
+
 	public static void main(String args[])
 	{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
 		while (true)
 		{
 			try
@@ -16,7 +18,6 @@ public class CalculatorTest
 				String input = br.readLine();
 				if (input.compareTo("q") == 0)
 					break;
-
 				command(input);
 			}
 			catch (Exception e)
@@ -61,22 +62,19 @@ public class CalculatorTest
 	}
 
 	private static String convertToPostfix(String input) throws Exception{
-		//if(!input.matches("(\\d+|\\s|[()^+\\-*/%])*+"))
-			//throw new Exception("Undefined symbol in input");
 		Stack<Character> stack = new Stack();
 		StringBuilder sb = new StringBuilder();
 		boolean lastWasOp = true;
-		Pattern pattern = Pattern.compile("(\\d+|[()^+\\-*/%])");
-		Matcher matcher = pattern.matcher(input);
-		while (matcher.find()) {
+		Matcher tokenMatcher = tokenPattern.matcher(input);
+		while (tokenMatcher.find()) {
 			//token is a string of a number(long) or an operator
-		    String token = matcher.group();
+		    String token = tokenMatcher.group();
 		    //if number, put it into postfix exp directly
-			if (token.matches("\\d+")) {
+            if (numberPattern.matcher(token).matches()) {
 				//invalid exp if two numbers are adjacent without operator
 			    if (!lastWasOp)
-			    	throw new Exception("Invalid expression");
-				sb.append(token + " ");
+			    	throw new Exception("Invalid expression1");
+				sb.append(token).append(" ");
 				lastWasOp = false;
 			} else {	//if operator, put it in operator stack
 				char op = token.charAt(0);
@@ -86,28 +84,28 @@ public class CalculatorTest
 					stack.push('(');
 					//invalid exp if left parenthesis come after number
 					if (!lastWasOp)
-						throw new Exception("Invalid expression");
+						throw new Exception("Invalid expression2");
 					lastWasOp = true;
 				} else if (op == ')') {
-					//invalid exp if parenthesis does not end with number
+					//invalid exp if exp inside parenthesis does not end with number
 					if (lastWasOp)
-						throw new Exception("Invalid expression");
+						throw new Exception("Invalid expression3");
 					while (!stack.isEmpty() && stack.peek() != '(') {
-						sb.append(stack.peek() + " ");
+						sb.append(stack.peek()).append(" ");
 						stack.pop();
 					}
-					//invalid exp if right parenthesis is more than left
+					//invalid exp if there are more right parenthesis than left ones
 					if (stack.isEmpty())
 						throw new Exception("Parenthesis does not match");
 					else
 						stack.pop();
 				} else {
-					//pop operators in stack with greater than or equal weight before push to implement precedence
+					//pop operators in stack with greater than or equal weight (to implement precedence)
                     while (!stack.isEmpty() && getWeight(stack.peek()) >= getWeight(op)) {
-                    	//in case of ^ and ~, do not pop previously inserted same operators to implement right associative
+                    	//in case of ^ and ~, pop operators in stack with greater wieght only (to implement right associative)
                     	if(stack.peek() == op && (op == '^' || op == '~'))
                     		break;
-                        sb.append(stack.peek() + " ");
+                        sb.append(stack.peek()).append(" ");
                         stack.pop();
                     }
                     stack.push(op);
@@ -119,7 +117,7 @@ public class CalculatorTest
 			//invalid exp if left parenthesis is more than right
             if(stack.peek() == '(')
                 throw new Exception("Parenthesis does not match");
-            sb.append(stack.peek() + " ");
+            sb.append(stack.peek()).append(" ");
             stack.pop();
         }
         return sb.toString().trim();
@@ -130,12 +128,12 @@ public class CalculatorTest
 		Stack<Long> stack = new Stack();
 		//each token contains a string of number(long) or an operator
 		for (String token : tokens) {
-			if (token.matches("\\d+")) {
+			if (numberPattern.matcher(token).matches()) {
 				stack.push(Long.parseLong(token));
 			} else {
 				//at least one number is needed for any operator
 				if (stack.isEmpty())
-					throw new Exception("Invalid expression");
+					throw new Exception("Invalid expression4");
 			    char op = token.charAt(0);
 			    if (op == '~') {
                     long num = stack.peek();	stack.pop();
@@ -144,14 +142,14 @@ public class CalculatorTest
 			        long num2 = stack.peek();	stack.pop();
 			        //at least two numbers are needed for binary operator
 			        if (stack.isEmpty())
-			        	throw new Exception("Invalid expression");
+			        	throw new Exception("Invalid expression5");
 			        long num1 = stack.peek();	stack.pop();
 			        switch (op) {
 						case '^' :
-						    if (num2 < 0)
-						    	throw new Exception("Exponent cannot be negative");
-						    else
-						    	stack.push((long)Math.pow(num1, num2));
+							if(num1 == 0 && num2 < 0)
+								throw new Exception("0^neg form");
+							else
+                                stack.push((long)Math.pow(num1, num2));
 						    break;
 						case '*' :
 							stack.push(num1 * num2);	break;
@@ -170,7 +168,8 @@ public class CalculatorTest
 						case '-' :
 							stack.push(num1 - num2);	break;
 						default :
-							throw new Exception("Invalid expression");
+							//should never reach here if there are only valid operators in exp
+							throw new Exception("Invalid expression6");
 					}
 				}
 
@@ -181,5 +180,4 @@ public class CalculatorTest
 			throw new Exception("Invalid expression");
 		return stack.peek();
 	}
-
 }
