@@ -73,7 +73,6 @@ public class SortingTest {
 						System.out.println(newvalue[i]);
 					}
 				}
-
 			}
 		} catch (IOException e) {
 			System.out.println("입력이 잘못되었습니다. 오류 : " + e.toString());
