@@ -95,8 +95,9 @@ public class SortingTest {
 		// 같은 크기의 새로운 배열을 만들어 그 배열을 리턴할 수도 있다.
         for (int n = value.length; n >= 0; n--) {
 			for (int i=1; i < n; ++i) {
-				if (value[i] < value[i-1])
+				if (value[i] < value[i-1]) {
 					swap(value, i, i - 1);
+				}
 			}
 		}
 		return (value);
@@ -117,38 +118,62 @@ public class SortingTest {
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
+	private static void percolateDown(int[] value, int i, int n)
+	{
+		int child;
+		while (i < n) {
+			child = 2 * i + 1;
+			if (2 * i + 2 < n && value[2 * i + 1] < value[2 * i + 2])
+				child = 2 * i + 2;
+			if (child < n && value[child] > value[i]) {
+				swap(value, i, child);
+			}
+			i = child;
+		}
+
+	}
+
 	private static int[] DoHeapSort(int[] value)
 	{
-		// TODO : Heap Sort 를 구현하라.
+		for (int i = value.length / 2; i >= 0; i--) {
+			percolateDown(value, i, value.length);
+		}
+		for (int i = value.length - 2; i >= 0; i--) {
+			swap(value, 0, i+1);
+			percolateDown(value, 0, i+1);
+		}
 		return (value);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
-	private static int[] mergeSort(int[] value)
+	private static void mergeSort(int[] value, int start, int end)
 	{
-		if(value.length == 1)
-			return (value);
-		int mid = value.length / 2;
-		int[] left = mergeSort(Arrays.copyOfRange(value, 0, mid));
-		int[] right = mergeSort(Arrays.copyOfRange(value, mid, value.length));
-		int[] ret = new int[value.length];
-		int lidx = 0, ridx = 0, idx=0;
+		if(start + 1 == end)
+			return;
+		int mid = (start + end) / 2;
+		mergeSort(value, start, mid);
+		mergeSort(value, mid, end);
+		int[] s = new int[end - start];
+		int lidx = start, ridx = mid, idx=0;
 
-		while (lidx < left.length || ridx < right.length) {
-			if (ridx == right.length)
-				ret[idx++] = left[lidx++];
-			else if (lidx == left.length)
-				ret[idx++] = right[ridx++];
-			else if (left[lidx] < right[ridx])
-				ret[idx++] = left[lidx++];
+		while (lidx < mid || ridx < end) {
+			if (ridx == end)
+				s[idx++] = value[lidx++];
+			else if (lidx == mid)
+				s[idx++] = value[ridx++];
+			else if (value[lidx] < value[ridx])
+				s[idx++] = value[lidx++];
 			else
-				ret[idx++] = right[ridx++];
+				s[idx++] = value[ridx++];
 		}
-		return (ret);
+		for (int i = 0; i < s.length; i++) {
+			value[start + i] = s[i];
+		}
 	}
 	private static int[] DoMergeSort(int[] value)
 	{
-		return mergeSort(value);
+		mergeSort(value, 0, value.length);
+		return (value);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,7 +214,36 @@ public class SortingTest {
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	private static int[] DoRadixSort(int[] value)
 	{
-		// TODO : Radix Sort 를 구현하라.
+	    int idx = 0, cnt = 0;
+	    int[] tmp = new int[value.length];
+	    //부호 비트를 제외한 나머지 31개의 비트로 먼저 기수정렬
+		for (int i = 0; i < 31; i++) {
+		    cnt = 0;
+			idx = 0;
+			for (int j = 0; j < value.length; j++) {
+				if (((1 << i) & value[j]) == 0)
+					value[idx++] = value[j];
+				else
+					tmp[cnt++] = value[j];
+			}
+			cnt = 0;
+			while (idx < value.length) {
+				value[idx++] = tmp[cnt++];
+			}
+		}
+		//부호 비트의 경우, 양수(0) 이 음수(1) 보다 크도록 정렬
+		cnt = 0;
+		idx = 0;
+		for (int j = 0; j < value.length; j++) {
+			if (((1 << 31) & value[j]) != 0)
+				value[idx++] = value[j];
+			else
+				tmp[cnt++] = value[j];
+		}
+		cnt = 0;
+		while (idx < value.length) {
+			value[idx++] = tmp[cnt++];
+		}
 		return (value);
 	}
 }
