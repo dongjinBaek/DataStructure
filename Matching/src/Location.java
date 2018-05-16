@@ -17,11 +17,28 @@ public class Location implements Comparable<Location>{
 
     @Override
     public int compareTo(Location o) {
-
+        int rowCmp = row - o.getRow();
+        if (rowCmp > 0)
+            return 1;
+        else if (rowCmp < 0)
+            return -1;
+        else {
+            int colCmp = col - o.getCol();
+            if (colCmp > 0)
+                return 1;
+            else if (colCmp < 0)
+                return -1;
+            else
+                return 0;
+        }
     }
 
     @Override
     public String toString() {
         return String.format("(%d, %d)", row, col);
+    }
+
+    public Location add(int v) {
+        return new Location(row, col + v);
     }
 }
