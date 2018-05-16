@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.LinkedList;
 
 public class Matching
 {
@@ -25,7 +26,19 @@ public class Matching
 
 	private static void command(String input)
 	{
-		// TODO : 아래 문장을 삭제하고 구현해라.
-		System.out.println("<< command 함수에서 " + input + " 명령을 처리할 예정입니다 >>");
+	    HashTable hashTable = new HashTable();
+
+	}
+
+	private static void read(HashTable hashTable, String filename) {
+
+	}
+
+	private static void print(HashTable hashTable, int index) {
+
+	}
+
+	private static void find(HashTable hashTable, String pattern) {
+
 	}
 }
