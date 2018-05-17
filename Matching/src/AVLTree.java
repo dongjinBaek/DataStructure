@@ -29,6 +29,28 @@ public class AVLTree {
 
     }
 
+    private TreeNode lRotate(TreeNode root) {
+        TreeNode newRoot = root.getRight();
+        root.setRight(root.getRight().getLeft());
+        newRoot.setLeft(root);
+
+        root.updateHeight();
+        newRoot.updateHeight();
+
+        return newRoot;
+    }
+
+    private TreeNode rRotate(TreeNode root) {
+        TreeNode newRoot = root.getLeft();
+        root.setLeft(root.getLeft().getRight());
+        newRoot.setRight(root);
+
+        root.updateHeight();
+        newRoot.updateHeight();
+
+        return newRoot;
+    }
+
     public void insert(String key, Location loc) {
         if (treeRoot == null) {
             treeRoot = new TreeNode(key , loc);
@@ -45,9 +67,29 @@ public class AVLTree {
             root.insert(loc);
         } else if (root.getKey().compareTo(key) > 0) {
             root.setLeft(insert(root.getLeft(), key, loc));
+            root.getHeight();
         } else {
             root.setRight(insert(root.getRight(), key, loc));
+            root.getHeight();
         }
+
+        if (root.getBalance() > 1) {
+            if (root.getLeft().getBalance() > 0) {
+                root = rRotate(root);
+            } else {
+                root.setLeft(root.getLeft());
+                root = rRotate(root);
+            }
+        } else if (root.getBalance() < -1) {
+            if (root.getRight().getBalance() < 0) {
+                root = lRotate(root);
+            } else {
+                root.setRight(root.getRight());
+                root = lRotate(root);
+            }
+        }
+
+        root.updateHeight();
         return root;
     }
 
@@ -72,12 +114,12 @@ class TreeNode {
     private String key;
     private TreeNode left;
     private TreeNode right;
-    private int lHeight;
-    private int rHeight;
+    private int height;
 
     public TreeNode(String key) {
         locations = new LinkedList<>();
         this.key = key;
+        this.height = 1;
     }
 
     public TreeNode(String key, Location loc) {
@@ -93,12 +135,8 @@ class TreeNode {
         return right;
     }
 
-    public int getlHeight() {
-        return lHeight;
-    }
-
-    public int getrHeight() {
-        return rHeight;
+    public int getHeight() {
+        return height;
     }
 
     public String getKey() {
@@ -113,8 +151,24 @@ class TreeNode {
         this.right = right;
     }
 
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
     public LinkedList<Location> getLocations() {
         return locations;
+    }
+
+    public int getBalance() {
+        int lHeight = (left == null ? 0 : left.getHeight());
+        int rHeight = (right == null ? 0 : right.getHeight());
+        return lHeight - rHeight;
+    }
+
+    public void updateHeight() {
+        int lHeight = (left == null ? 0 : left.getHeight());
+        int rHeight = (right == null ? 0 : right.getHeight());
+        height = 1 + Math.max(lHeight, rHeight);
     }
 
     public void insert(Location loc) {

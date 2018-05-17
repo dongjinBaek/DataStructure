@@ -94,6 +94,11 @@ public class Matching
 			ret = tmp;
 		}
 
+		if (ret.size() == 0) {
+			System.out.println("(0, 0)");
+			return;
+		}
+
 		StringBuilder sb = new StringBuilder();
 		for (Location loc : ret) {
 			sb.append(loc);
