@@ -1,12 +1,12 @@
 import java.io.*;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 public class Matching
 {
-
-	public static HashTable hashTable;
+	public static final int MOD = 100;
+	public static Hashtable<Integer, AVLTree<Location, String>> hashTable;
 
 	public static void main(String args[])
 	{
@@ -51,36 +51,52 @@ public class Matching
 
 	}
 
+	public static int hash(String str) {
+		int ret = 0;
+        for (int i = 0; i < str.length(); i++) {
+            ret += (int)str.charAt(i);
+        }
+        return ret % MOD;
+	}
+
 	private static void read(String filename) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(filename));
-		hashTable = new HashTable();
+		hashTable = new Hashtable<>(MOD);
+		for (int i = 0; i < MOD; i++) {
+			hashTable.put(i, new AVLTree<>());
+		}
 		int lineNumber = 1;
 		String line;
 		while ((line = br.readLine()) != null) {
 			int start = 0;
 			for (int end = 6; end <= line.length(); start++, end++) {
-				hashTable.insert(line.substring(start, end), new Location(lineNumber, start+1));
+				String str = line.substring(start, end);
+				int h = hash(str);
+				hashTable.get(h).insert(str, new Location(lineNumber, start+1));
 			}
 			lineNumber++;
 		}
 	}
 
 	private static void print(int index) {
-		hashTable.print(index);
+		hashTable.get(index).printPreorder();
 	}
 
 	private static void find(String pattern) {
 		int nGroup = pattern.length() / 6;
-		int remainder = pattern.length() % 6;
 
-		LinkedList<Location> ret = hashTable.find(pattern.substring(0, 6));
+		String str = pattern.substring(0, 6);
+		int h = hash(str);
+		LinkedList<Location> ret = hashTable.get(h).find(str).getList();
 
 		for (int i = 1; i <= nGroup; i++) {
 			LinkedList<Location> tmp = new LinkedList<>();
 			int diff = 6 * i;
 			if (i == nGroup)
 				diff = pattern.length() - 6;
-			LinkedList<Location> o = hashTable.find(pattern.substring(diff, diff + 6));
+			str = pattern.substring(diff, diff + 6);
+			h = hash(str);
+			LinkedList<Location> o = hashTable.get(h).find(str).getList();
 			Iterator<Location> it = o.iterator();
 		    for (Location loc : ret) {
 				if(!it.hasNext())
@@ -96,14 +112,14 @@ public class Matching
 
 		if (ret.size() == 0) {
 			System.out.println("(0, 0)");
-			return;
+		} else {
+			StringBuilder sb = new StringBuilder();
+			sb.append(ret.get(0));
+			for (int i = 1; i < ret.size(); i++) {
+				sb.append(" ");
+				sb.append(ret.get(i));
+			}
+			System.out.println(sb.toString());
 		}
-
-		StringBuilder sb = new StringBuilder();
-		for (Location loc : ret) {
-			sb.append(loc);
-			sb.append(" ");
-		}
-		System.out.println(sb.toString().trim());
 	}
 }

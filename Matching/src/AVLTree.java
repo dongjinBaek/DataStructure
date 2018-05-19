@@ -1,7 +1,9 @@
 import java.util.LinkedList;
 
-public class AVLTree {
-    private TreeNode treeRoot;
+//T : Key type of LinkedList Node
+//S : Key type of Tree Node
+public class AVLTree<T extends Comparable<T>, S extends Comparable<S>> {
+    private TreeNode<T, S> treeRoot;
 
     public AVLTree() {
         treeRoot = null;
@@ -19,7 +21,7 @@ public class AVLTree {
         }
     }
 
-    private void printPreorder(TreeNode root) {
+    private void printPreorder(TreeNode<T, S> root) {
         if (root == null)
             return;
         System.out.print(" ");
@@ -29,8 +31,8 @@ public class AVLTree {
 
     }
 
-    private TreeNode lRotate(TreeNode root) {
-        TreeNode newRoot = root.getRight();
+    private TreeNode<T, S> lRotate(TreeNode<T,S> root) {
+        TreeNode<T, S> newRoot = root.getRight();
         root.setRight(root.getRight().getLeft());
         newRoot.setLeft(root);
 
@@ -40,8 +42,8 @@ public class AVLTree {
         return newRoot;
     }
 
-    private TreeNode rRotate(TreeNode root) {
-        TreeNode newRoot = root.getLeft();
+    private TreeNode<T, S> rRotate(TreeNode<T, S> root) {
+        TreeNode<T, S> newRoot = root.getLeft();
         root.setLeft(root.getLeft().getRight());
         newRoot.setRight(root);
 
@@ -51,26 +53,26 @@ public class AVLTree {
         return newRoot;
     }
 
-    public void insert(String key, Location loc) {
+    public void insert(S key, T loc) {
         if (treeRoot == null) {
-            treeRoot = new TreeNode(key , loc);
+            treeRoot = new TreeNode<>(key , loc);
         } else {
             treeRoot = insert(treeRoot, key, loc);
         }
     }
 
     //insert and return root
-    private TreeNode insert(TreeNode root, String key, Location loc) {
+    private TreeNode<T, S> insert(TreeNode<T, S> root, S key, T loc) {
         if (root == null)
-            return new TreeNode(key, loc);
+            return new TreeNode<>(key, loc);
         else if (root.getKey().equals(key)) {
             root.insert(loc);
         } else if (root.getKey().compareTo(key) > 0) {
             root.setLeft(insert(root.getLeft(), key, loc));
-            root.getHeight();
+            root.updateHeight();
         } else {
             root.setRight(insert(root.getRight(), key, loc));
-            root.getHeight();
+            root.updateHeight();
         }
 
         if (root.getBalance() > 1) {
@@ -93,13 +95,13 @@ public class AVLTree {
         return root;
     }
 
-    public TreeNode find(String key) {
+    public TreeNode<T, S> find(S key) {
         return find(treeRoot, key);
     }
 
-    private TreeNode find(TreeNode root, String key) {
+    private TreeNode<T, S> find(TreeNode<T, S> root, S key) {
         if (root == null)
-            return new TreeNode(key, new Location(0, 0));
+            return new TreeNode<>(key);
         if (root.getKey().compareTo(key) == 0)
             return root;
         else if (root.getKey().compareTo(key) > 0)
@@ -109,29 +111,29 @@ public class AVLTree {
     }
 }
 
-class TreeNode {
-    private LinkedList<Location> locations;
-    private String key;
-    private TreeNode left;
-    private TreeNode right;
+class TreeNode<T extends Comparable<T>, S> {
+    private LinkedList<T> linkedList;
+    private S key;
+    private TreeNode<T, S> left;
+    private TreeNode<T, S> right;
     private int height;
 
-    public TreeNode(String key) {
-        locations = new LinkedList<>();
+    public TreeNode(S key) {
+        linkedList = new LinkedList<>();
         this.key = key;
         this.height = 1;
     }
 
-    public TreeNode(String key, Location loc) {
+    public TreeNode(S key, T loc) {
         this(key);
         insert(loc);
     }
 
-    public TreeNode getLeft() {
+    public TreeNode<T, S> getLeft() {
         return left;
     }
 
-    public TreeNode getRight() {
+    public TreeNode<T, S> getRight() {
         return right;
     }
 
@@ -139,24 +141,20 @@ class TreeNode {
         return height;
     }
 
-    public String getKey() {
+    public S getKey() {
         return key;
     }
 
-    public void setLeft(TreeNode left) {
+    public void setLeft(TreeNode<T, S> left) {
         this.left = left;
     }
 
-    public void setRight(TreeNode right) {
+    public void setRight(TreeNode<T, S> right) {
         this.right = right;
     }
 
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public LinkedList<Location> getLocations() {
-        return locations;
+    public LinkedList<T> getList() {
+        return linkedList;
     }
 
     public int getBalance() {
@@ -171,13 +169,13 @@ class TreeNode {
         height = 1 + Math.max(lHeight, rHeight);
     }
 
-    public void insert(Location loc) {
+    public void insert(T loc) {
         int idx = 0;
-        for (Location curr : locations) {
+        for (T curr : linkedList) {
             if (curr.compareTo(loc) < 0)
                 idx++;
         }
-        locations.add(idx, loc);
+        linkedList.add(idx, loc);
     }
 }
 

@@ -2,6 +2,11 @@ public class Location implements Comparable<Location>{
     private int row;
     private int col;
 
+    public Location() {
+        row = 0;
+        col = 0;
+    }
+
     public Location(int row, int col) {
         this.row = row;
         this.col = col;
