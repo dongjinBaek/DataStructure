@@ -97,13 +97,11 @@ public class Matching
 			str = pattern.substring(diff, diff + 6);
 			h = hash(str);
 			LinkedList<Location> o = hashTable.get(h).find(str).getList();
-			Iterator<Location> it = o.iterator();
+			int oIdx = 0;
 		    for (Location loc : ret) {
-				if(!it.hasNext())
-					break;
-				int comp = 1;
-				while (comp == 1 && it.hasNext())
-					comp = loc.add(diff).compareTo(it.next());
+		    	int comp = 1;
+				while (oIdx < o.size() && (comp = loc.add(diff).compareTo(o.get(oIdx))) > 0)
+					oIdx++;
 				if (comp == 0)
 					tmp.addLast(loc);
 			}

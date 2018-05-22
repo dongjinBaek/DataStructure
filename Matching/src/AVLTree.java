@@ -75,18 +75,18 @@ public class AVLTree<T extends Comparable<T>, S extends Comparable<S>> {
             root.updateHeight();
         }
 
-        if (root.getBalance() > 1) {
-            if (root.getLeft().getBalance() > 0) {
+        if (root.getHeightDiff() > 1) {
+            if (root.getLeft().getHeightDiff() > 0) {
                 root = rRotate(root);
             } else {
-                root.setLeft(root.getLeft());
+                root.setLeft(lRotate(root.getLeft()));
                 root = rRotate(root);
             }
-        } else if (root.getBalance() < -1) {
-            if (root.getRight().getBalance() < 0) {
+        } else if (root.getHeightDiff() < -1) {
+            if (root.getRight().getHeightDiff() < 0) {
                 root = lRotate(root);
             } else {
-                root.setRight(root.getRight());
+                root.setRight(rRotate(root.getRight()));
                 root = lRotate(root);
             }
         }
@@ -157,7 +157,7 @@ class TreeNode<T extends Comparable<T>, S> {
         return linkedList;
     }
 
-    public int getBalance() {
+    public int getHeightDiff() {
         int lHeight = (left == null ? 0 : left.getHeight());
         int rHeight = (right == null ? 0 : right.getHeight());
         return lHeight - rHeight;
