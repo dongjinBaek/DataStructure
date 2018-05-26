@@ -1,3 +1,4 @@
+//Class to store starting location of substring
 public class Location implements Comparable<Location>{
     private int row;
     private int col;

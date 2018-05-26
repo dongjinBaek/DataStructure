@@ -53,6 +53,7 @@ public class AVLTree<T extends Comparable<T>, S extends Comparable<S>> {
         return newRoot;
     }
 
+    //insert new node(key, loc)
     public void insert(S key, T loc) {
         if (treeRoot == null) {
             treeRoot = new TreeNode<>(key , loc);
@@ -61,7 +62,7 @@ public class AVLTree<T extends Comparable<T>, S extends Comparable<S>> {
         }
     }
 
-    //insert and return root
+    //insert node with key and return new root
     private TreeNode<T, S> insert(TreeNode<T, S> root, S key, T loc) {
         if (root == null)
             return new TreeNode<>(key, loc);
@@ -111,6 +112,8 @@ public class AVLTree<T extends Comparable<T>, S extends Comparable<S>> {
     }
 }
 
+//T : Key type of LinkedList Node
+//S : Key type of Tree Node
 class TreeNode<T extends Comparable<T>, S> {
     private LinkedList<T> linkedList;
     private S key;
@@ -157,6 +160,7 @@ class TreeNode<T extends Comparable<T>, S> {
         return linkedList;
     }
 
+    //returns leftHeight - rightHeight
     public int getHeightDiff() {
         int lHeight = (left == null ? 0 : left.getHeight());
         int rHeight = (right == null ? 0 : right.getHeight());

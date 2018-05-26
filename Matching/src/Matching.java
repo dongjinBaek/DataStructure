@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Matching
@@ -51,6 +50,7 @@ public class Matching
 
 	}
 
+	//hash function : add ASCII value of every element of string
 	public static int hash(String str) {
 		int ret = 0;
         for (int i = 0; i < str.length(); i++) {
@@ -61,6 +61,7 @@ public class Matching
 
 	private static void read(String filename) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(filename));
+		//initialize data structure
 		hashTable = new Hashtable<>(MOD);
 		for (int i = 0; i < MOD; i++) {
 			hashTable.put(i, new AVLTree<>());
@@ -69,6 +70,7 @@ public class Matching
 		String line;
 		while ((line = br.readLine()) != null) {
 			int start = 0;
+			//for every substring of length 6, insert into AVLTree
 			for (int end = 6; end <= line.length(); start++, end++) {
 				String str = line.substring(start, end);
 				int h = hash(str);
@@ -82,16 +84,20 @@ public class Matching
 		hashTable.get(index).printPreorder();
 	}
 
+	//find locations in data file that matches with the pattern
 	private static void find(String pattern) {
 		int nGroup = pattern.length() / 6;
 
+		//first, find matches using first six letters
 		String str = pattern.substring(0, 6);
 		int h = hash(str);
 		LinkedList<Location> ret = hashTable.get(h).find(str).getList();
 
 		for (int i = 1; i <= nGroup; i++) {
 			LinkedList<Location> tmp = new LinkedList<>();
+			//for all candiates, check if next six letters match
 			int diff = 6 * i;
+			//also check if last six letters matches
 			if (i == nGroup)
 				diff = pattern.length() - 6;
 			str = pattern.substring(diff, diff + 6);
@@ -108,6 +114,7 @@ public class Matching
 			ret = tmp;
 		}
 
+		//case no matches found, just print (0, 0)
 		if (ret.size() == 0) {
 			System.out.println("(0, 0)");
 		} else {
