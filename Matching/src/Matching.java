@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Matching
@@ -95,7 +96,7 @@ public class Matching
 
 		for (int i = 1; i <= nGroup; i++) {
 			LinkedList<Location> tmp = new LinkedList<>();
-			//for all candiates, check if next six letters match
+			//for all candidates, check if next six letters match
 			int diff = 6 * i;
 			//also check if last six letters matches
 			if (i == nGroup)
@@ -103,11 +104,19 @@ public class Matching
 			str = pattern.substring(diff, diff + 6);
 			h = hash(str);
 			LinkedList<Location> o = hashTable.get(h).find(str).getList();
-			int oIdx = 0;
+			Iterator<Location> it = o.iterator();
+			if (!it.hasNext()) {
+				System.out.println("(0, 0)");
+				return;
+			}
+			Location oLoc = it.next();
 		    for (Location loc : ret) {
 		    	int comp = 1;
-				while (oIdx < o.size() && (comp = loc.add(diff).compareTo(o.get(oIdx))) > 0)
-					oIdx++;
+				while ((comp = loc.add(diff).compareTo(oLoc)) > 0) {
+				    if (!it.hasNext())
+				    	break;
+					oLoc = it.next();
+				}
 				if (comp == 0)
 					tmp.addLast(loc);
 			}
