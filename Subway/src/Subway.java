@@ -4,11 +4,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Subway {
+    //there is one virtual node per one station name
     //virtualNode is connected to all nodes that has same name with it
     //Edge going out from vNode is (1, 0), into vNode is (0, 0)
+    //Transfer is implemented using vNode (shortest path b/w transfer station is (1,0))
     //(name, node)
     private static HashMap<String, Node> virtualNodes = new HashMap<>();
-    //id, node
+    //(id, node)
     private static HashMap<String, Node> id_node = new HashMap<>();
     private static Set<Node> nodes = new HashSet<>();
 
@@ -42,6 +44,7 @@ public class Subway {
                 String id = token[0];
                 String name = token[1];
                 Node vNode, nNode;
+                //create virtual node if not exists
                 if (!virtualNodes.containsKey(name)) {
                     vNode = new Node(null, name);
                     virtualNodes.put(name, vNode);
@@ -49,6 +52,7 @@ public class Subway {
                 } else {
                     vNode = virtualNodes.get(name);
                 }
+                //create edge between current station and virtual station
                 nNode = new Node(id, name);
                 nodes.add(nNode);
                 id_node.put(id, nNode);
@@ -56,6 +60,7 @@ public class Subway {
                 vNode.addEdge(new Edge(nNode, new Distance(1, 0)));
             }
 
+            //add edges in input file
             while ((s = br.readLine()) != null) {
                 String[] token = s.split(" ");
                 Node n1 = id_node.get(token[0]);
@@ -63,7 +68,6 @@ public class Subway {
                 long time = Long.parseLong(token[2]);
                 n1.addEdge(new Edge(n2, new Distance(0, time)));
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }

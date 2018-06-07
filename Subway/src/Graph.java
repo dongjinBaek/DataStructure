@@ -10,14 +10,15 @@ public class Graph {
 
     public void dijkstraAlgorithm(Node start, Node end, String compBy) {
         Set<Node> visitedNodes = new HashSet<>();
-        PriorityQueue<Node> pq;
+        //pq contains set of imaginary edges in form of (start->node)
+        PriorityQueue<Edge> pq;
         Comparator<Distance> comparator;
         if (compBy.equals("byTime")) {
             comparator = new ComparatorByTime();
-            pq = new PriorityQueue<>(Node.getComparatorByTime());
+            pq = new PriorityQueue<>(Edge.getComparatorByTime());
         } else {
             comparator = new ComparatorByTransfers();
-            pq = new PriorityQueue<>(Node.getComparatorByTransfers());
+            pq = new PriorityQueue<>(Edge.getComparatorByTransfers());
         }
 
         for (Node node : nodes) {
@@ -26,27 +27,30 @@ public class Graph {
 
         start.setDist(new Distance(0, 0));
         start.setPrev(null);
-        pq.add(start);
+        pq.add(new Edge(start, new Distance(0, 0)));
 
         while (!pq.isEmpty()) {
-            Node here = pq.poll();
+            Node here = pq.poll().getDest();
             if (visitedNodes.contains(here))
                 continue;
             visitedNodes.add(here);
+
             for (Edge edge : here.getAdj()) {
                 Node next = edge.getDest();
                 Distance d = edge.getDistance();
                 if (visitedNodes.contains(next))
                     continue;
-                if (comparator.compare(next.getDist(), here.getDist().add(d)) > 0) {
-                    next.setDist(here.getDist().add(d));
+                Distance cand = here.getDist().add(d);
+                if (comparator.compare(next.getDist(), cand) > 0) {
+                    next.setDist(cand);
                     next.setPrev(here);
-                    pq.add(next);
+                    pq.add(new Edge(next, cand));
                 }
             }
         }
 
         printPath(start, end);
+        //need to subtract 5mins b/c start and end nodes are virtual nodes
         System.out.println(end.getDist().getTotTime() - 5);
     }
 
@@ -57,6 +61,7 @@ public class Graph {
             here = here.getPrev();
             if (here == start)
                 break;
+            //if path includes virtual node, it has transferred there
             if (here.getId() == null) {
                 String st = path.pollLast();
                 path.add("["+st+"]");

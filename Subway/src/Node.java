@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class Node {
     private String id;
@@ -13,23 +12,6 @@ public class Node {
         this.name = name;
         adj = new ArrayList<>();
         prev = null;
-    }
-
-    public static Comparator<Node> getComparatorByTime() {
-        return new Comparator<Node>() {
-            @Override
-            public int compare(Node n1, Node n2) {
-                return new ComparatorByTime().compare(n1.dist, n2.dist);
-            }
-        };
-    }
-    public static Comparator<Node> getComparatorByTransfers() {
-        return new Comparator<Node>() {
-            @Override
-            public int compare(Node n1, Node n2) {
-                return new ComparatorByTransfers().compare(n1.dist, n2.dist);
-            }
-        };
     }
 
     public void addEdge(Edge e) {
